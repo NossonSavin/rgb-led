@@ -3,6 +3,8 @@
 
 #include <Arduino.h>
 #include <driver/rmt.h>
+#include <freertos/FreeRTOS.h>
+#include <freertos/semphr.h>
 #include <vector>
 
 struct RGB
@@ -16,6 +18,7 @@ class RGBLed
 {
 public:
     RGBLed(uint8_t dataPin, rmt_channel_t rmtChannel = RMT_CHANNEL_0);
+    ~RGBLed();
 
     void begin(uint16_t numLeds);
 
@@ -32,6 +35,9 @@ private:
     uint8_t dataPin;
     rmt_channel_t rmtChannel;
     std::vector<RGB> leds;
+    std::vector<rmt_item32_t> txItems;
+    SemaphoreHandle_t ledMutex;
+    uint8_t memBlockCount;
 
     void setupRMT();
     void sendRGB();
