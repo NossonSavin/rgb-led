@@ -1,5 +1,13 @@
 #include "rgb_led.h"
 
+#if __has_include(<esp_intr_alloc.h>)
+#include <esp_intr_alloc.h>
+#endif
+
+#ifndef ESP_INTR_FLAG_IRAM
+#define ESP_INTR_FLAG_IRAM 0
+#endif
+
 #ifndef RMT_MEM_ITEM_NUM
 #define RMT_MEM_ITEM_NUM 64
 #endif
@@ -102,7 +110,7 @@ void RGBLed::setupRMT()
     config.tx_config.idle_output_en = true;
 
     rmt_config(&config);
-    rmt_driver_install(rmtChannel, 0, 0);
+    rmt_driver_install(rmtChannel, 0, ESP_INTR_FLAG_IRAM);
 }
 
 void RGBLed::sendRGB()
